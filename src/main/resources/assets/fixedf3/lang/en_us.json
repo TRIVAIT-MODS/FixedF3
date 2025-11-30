@@ -1,0 +1,6 @@
+{
+  "text.autoconfig.fixed_f3.title": "Fixed F3",
+
+  "text.autoconfig.fixed_f3.option.modEnabled": "Mod enabled",
+  "text.autoconfig.fixed_f3.option.f3OnCompass": "Show full f3 if you hold a compass in your hand"
+}

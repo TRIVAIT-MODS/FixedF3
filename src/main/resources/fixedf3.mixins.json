@@ -3,7 +3,7 @@
 	"package": "org.trivait.fixedf3.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+      "F3HudMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
