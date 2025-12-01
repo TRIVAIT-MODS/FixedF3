@@ -3,7 +3,7 @@
 	"id": "fixedf3",
 	"version": "${version}",
 	"name": "FixedF3",
-	"description": "This mod adds patch for f3 hud",
+	"description": "This mod adds fixes for f3 hud",
 	"authors": [
 		{
 			"name" : "TRIVAIT",

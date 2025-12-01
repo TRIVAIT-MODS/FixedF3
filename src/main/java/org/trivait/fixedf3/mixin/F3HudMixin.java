@@ -1,14 +1,15 @@
 package org.trivait.fixedf3.mixin;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
-import net.minecraft.item.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.trivait.fixedf3.FixedF3;
 
 import java.util.List;
@@ -24,15 +25,16 @@ public abstract class F3HudMixin {
 
 		ItemStack main = player.getMainHandStack();
 		ItemStack off = player.getOffHandStack();
-		return ((main.isOf(Items.COMPASS) || off.isOf(Items.COMPASS)) && FixedF3.CONFIG.f3OnCompass) || !FixedF3.CONFIG.modEnabled;
+
+		return ((main.isOf(Items.COMPASS) || off.isOf(Items.COMPASS)) && FixedF3.CONFIG.f3OnCompass)
+				|| !FixedF3.CONFIG.modEnabled;
 	}
 
-	@Inject(method = "getLeftText", at = @At("RETURN"), cancellable = true)
-	private void filterLeftText(CallbackInfoReturnable<List<String>> cir) {
+	@Inject(method = "drawText", at = @At("HEAD"))
+	private void filterDrawText(DrawContext context, List<String> text, boolean left, CallbackInfo ci) {
 		if (hasCompass()) return;
 
-		List<String> original = cir.getReturnValue();
-		List<String> filtered = original.stream()
+		List<String> filtered = text.stream()
 				.filter(line -> !(line.startsWith("XYZ") ||
 						line.startsWith("Block:") ||
 						line.startsWith("Chunk:") ||
@@ -43,18 +45,8 @@ public abstract class F3HudMixin {
 						line.startsWith("Biome:") ||
 						line.startsWith("Local Difficulty:") ||
 						line.startsWith("Blending:") ||
-						line.contains("FC:")))
-				.collect(Collectors.toList());
-		cir.setReturnValue(filtered);
-	}
-
-	@Inject(method = "getRightText", at = @At("RETURN"), cancellable = true)
-	private void filterRightText(CallbackInfoReturnable<List<String>> cir) {
-		if (hasCompass()) return;
-
-		List<String> original = cir.getReturnValue();
-		List<String> filtered = original.stream()
-				.filter(line -> !(line.contains("Targeted Block") ||
+						line.contains("FC:") ||
+						line.contains("Targeted Block") ||
 						line.contains("Targeted Fluid") ||
 						line.contains("Targeted Entity") ||
 						line.startsWith("#minecraft:") ||
@@ -62,6 +54,8 @@ public abstract class F3HudMixin {
 						line.contains(": true") ||
 						line.contains(": false")))
 				.collect(Collectors.toList());
-		cir.setReturnValue(filtered);
+
+		text.clear();
+		text.addAll(filtered);
 	}
 }
